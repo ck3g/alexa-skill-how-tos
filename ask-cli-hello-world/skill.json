@@ -1,0 +1,30 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "summary": "The hello world Alexa skill",
+          "examplePhrases": [
+            "Alexa open my second skill",
+            "Alexa ask my second skill what did I learn",
+            "Alexa ask my second skill did I learn something"
+          ],
+          "name": "what-did-i-learn",
+          "description": "My second Alexa skill which tells a stuff I've learned today"
+        }
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Sample Testing Instructions.",
+      "category": "EDUCATION_AND_REFERENCE",
+      "distributionCountries": []
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "sourceDir": "lambda/custom"
+        }
+      }
+    },
+    "manifestVersion": "1.0"
+  }
+}

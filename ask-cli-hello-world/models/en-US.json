@@ -1,0 +1,41 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "my second skill",
+      "types": [
+
+      ],
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": [
+
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": [
+
+          ]
+        },
+        {
+          "name": "WhatDidILearnIntent",
+          "slots": [
+
+          ],
+          "samples": [
+            "What did I learn",
+            "What have I learned",
+            "Did I learn something"
+          ]
+        }
+      ]
+    }
+  }
+}
