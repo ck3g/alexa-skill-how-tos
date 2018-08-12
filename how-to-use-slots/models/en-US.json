@@ -2,40 +2,56 @@
   "interactionModel": {
     "languageModel": {
       "invocationName": "my second skill",
-      "types": [
-
-      ],
       "intents": [
         {
           "name": "AMAZON.CancelIntent",
-          "samples": [
-
-          ]
+          "samples": []
         },
         {
           "name": "AMAZON.HelpIntent",
-          "samples": [
-
-          ]
+          "samples": []
         },
         {
           "name": "AMAZON.StopIntent",
-          "samples": [
-
-          ]
+          "samples": []
         },
         {
           "name": "WhatDidILearnIntent",
-          "slots": [
-
-          ],
+          "slots": [],
           "samples": [
             "What did I learn",
             "What have I learned",
             "Did I learn something"
           ]
+        },
+        {
+          "name": "NameNumberIntent",
+          "slots": [],
+          "samples": [
+            "I would like to tell a number",
+            "I want to tell a number",
+            "I would like to say a number",
+            "I want to say a number",
+            "I would like to name a number",
+            "I want to name a number"
+          ]
+        },
+        {
+          "name": "AnswerIntent",
+          "slots": [
+            {
+              "name": "numberAnswer",
+              "type": "AMAZON.NUMBER"
+            }
+          ],
+          "samples": [
+            "Number {numberAnswer}",
+            "The number is {numberAnswer}",
+            "{numberAnswer}"
+          ]
         }
-      ]
+      ],
+      "types": []
     }
   }
 }

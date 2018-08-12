@@ -8,7 +8,7 @@ const LaunchRequestHandler = {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
   handle(handlerInput) {
-    const speechText = 'Welcome! You can ask "what did I learn".';
+    const speechText = 'Welcome! You can ask "what did I learn" or "I want to name a number".';
 
     return handlerInput.responseBuilder
       .speak(speechText)
@@ -24,7 +24,41 @@ const WhatDidILearnIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'WhatDidILearnIntent';
   },
   handle(handlerInput) {
-    const speechText = 'Congratulations! You have learned how to build your second Alexa skill.'
+    const speechText = 'Congratulations! You have learned how to use slots in Alexa skill.'
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .withSimpleCard('What did I learn', speechText)
+      .getResponse();
+  },
+};
+
+const NameNumberIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'NameNumberIntent';
+  },
+  handle(handlerInput) {
+    const speechText = 'Ok. Tell me any number after a signal. Beep!'
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .reprompt(speechText)
+      .withSimpleCard('What did I learn', speechText)
+      .getResponse();
+  },
+};
+
+const AnswerIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AnswerIntent';
+  },
+  handle(handlerInput) {
+    const slots = handlerInput.requestEnvelope.request.intent.slots;
+    const number = slots['numberAnswer'].value;
+
+    const speechText = `Your number is: ${number}.`
 
     return handlerInput.responseBuilder
       .speak(speechText)
@@ -96,6 +130,8 @@ exports.handler = skillBuilder
   .addRequestHandlers(
     LaunchRequestHandler,
     WhatDidILearnIntentHandler,
+    NameNumberIntentHandler,
+    AnswerIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler
