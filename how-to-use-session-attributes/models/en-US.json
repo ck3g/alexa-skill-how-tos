@@ -1,0 +1,41 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "toy robot simulator",
+      "types": [
+
+      ],
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": [
+
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": [
+
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": [
+
+          ]
+        },
+        {
+          "name": "PlaceIntent",
+          "slots": [
+
+          ],
+          "samples": [
+            "Place the robot",
+            "Start the simulation",
+            "Begin"
+          ]
+        }
+      ]
+    }
+  }
+}
