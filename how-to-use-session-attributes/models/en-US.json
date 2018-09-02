@@ -43,6 +43,24 @@
             "Where is the robot",
             "Where am I"
           ]
+        },
+        {
+          "name": "TurnRightIntent",
+          "slots": [],
+          "samples": [
+            "turn right",
+            "right",
+            "rotate right"
+          ]
+        },
+        {
+          "name": "TurnLeftIntent",
+          "slots": [],
+          "samples": [
+            "turn left",
+            "left",
+            "rotate left"
+          ]
         }
       ]
     }

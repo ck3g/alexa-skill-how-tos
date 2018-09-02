@@ -77,6 +77,72 @@ const ReportIntentHandler = {
   },
 };
 
+const TurnRightIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'TurnRightIntent';
+  },
+  handle(handlerInput) {
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const { position } = sessionAttributes;
+    const rotateDirections = {
+      north: 'east',
+      east: 'south',
+      south: 'west',
+      west: 'north'
+    };
+    let speechText = '';
+
+    if (typeof position === 'undefined') {
+      speechText = 'The robot is not in the position yet. You need to place it first.';
+    } else {
+      position.direction = rotateDirections[position.direction];
+      speechText = 'Beep-Boop.';
+    }
+
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .reprompt(speechText)
+      .withSimpleCard(CARD_TITLE, speechText)
+      .getResponse();
+  },
+};
+
+const TurnLeftIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'TurnLeftIntent';
+  },
+  handle(handlerInput) {
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const { position } = sessionAttributes;
+    const rotateDirections = {
+      north: 'west',
+      west: 'south',
+      south: 'east',
+      east: 'north'
+    };
+    let speechText = '';
+
+    if (typeof position === 'undefined') {
+      speechText = 'The robot is not in the position yet. You need to place it first.';
+    } else {
+      position.direction = rotateDirections[position.direction];
+      speechText = 'Beep-Boop.';
+    }
+
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .reprompt(speechText)
+      .withSimpleCard(CARD_TITLE, speechText)
+      .getResponse();
+  },
+};
+
 const HelpIntentHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -139,6 +205,8 @@ exports.handler = skillBuilder
     LaunchRequestHandler,
     PlaceIntentHandler,
     ReportIntentHandler,
+    TurnRightIntentHandler,
+    TurnLeftIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler
