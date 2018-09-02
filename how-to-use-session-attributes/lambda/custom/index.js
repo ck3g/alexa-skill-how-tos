@@ -7,6 +7,27 @@ const CARD_TITLE = 'The Toy Robot Simulator';
 const HELP_MESSAGE = 'You can place your robot to a default position using "Place" command. Once the robot is in the position you can move it using "move" command, rotate it using "turn left" or "turn right" commands. In between, you can use the "Report" command to ask for its current position.';
 const WELCOME_MESSAGE = `Welcome to the toy robot simulator! ${HELP_MESSAGE}`;
 
+const calculateNewPosition = (position) => {
+  switch (position.direction) {
+    case 'north':
+      position.x = Math.min(position.x + 1, 4);
+      return;
+    case 'east':
+      position.y = Math.min(position.y + 1, 4);
+      return;
+    case 'south':
+      position.x = Math.max(position.x - 1, 0);
+      return;
+    case 'west':
+      position.x = Math.max(position.y - 1, 0);
+      return;
+
+    default:
+  }
+
+  return position;
+};
+
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
@@ -143,6 +164,33 @@ const TurnLeftIntentHandler = {
   },
 };
 
+const MoveIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'MoveIntent';
+  },
+  handle(handlerInput) {
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    let { position } = sessionAttributes;
+    let speechText = '';
+
+    if (typeof position === 'undefined') {
+      speechText = 'The robot is not in the position yet. You need to place it first.';
+    } else {
+      position = calculateNewPosition(position);
+      speechText = 'Beep-Boop.';
+    }
+
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .reprompt(speechText)
+      .withSimpleCard(CARD_TITLE, speechText)
+      .getResponse();
+  },
+};
+
 const HelpIntentHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -207,6 +255,7 @@ exports.handler = skillBuilder
     ReportIntentHandler,
     TurnRightIntentHandler,
     TurnLeftIntentHandler,
+    MoveIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler

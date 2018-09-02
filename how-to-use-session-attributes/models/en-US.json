@@ -61,6 +61,14 @@
             "left",
             "rotate left"
           ]
+        },
+        {
+          "name": "MoveIntent",
+          "slots": [],
+          "samples": [
+            "move",
+            "go forward"
+          ]
         }
       ]
     }
