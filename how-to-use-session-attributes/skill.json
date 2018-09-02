@@ -9,7 +9,7 @@
             "Alexa ask toy robot simulator place the robot",
             "Alexa ask toy robot simulator start the simulation"
           ],
-          "name": "toy-robot-simulator",
+          "name": "The toy robot simulator",
           "description": "The Toy Robot simulator. Place and move the toy robot around a table."
         }
       },
