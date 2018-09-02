@@ -26,10 +26,25 @@ const PlaceIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'PlaceIntent';
   },
   handle(handlerInput) {
-    const speechText = 'The robot has been places into its initial position.'
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const { position } = sessionAttributes;
+
+    let speechText = 'The robot is already in the position.';
+
+    if (typeof position === 'undefined') {
+      speechText = 'The robot is in the initial position.';
+      sessionAttributes.position = {
+        'direction': 'north',
+        'x': 0,
+        'y': 0
+      };
+    }
+
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
     return handlerInput.responseBuilder
       .speak(speechText)
+      .reprompt(speechText)
       .withSimpleCard(CARD_TITLE, speechText)
       .getResponse();
   },
@@ -56,7 +71,7 @@ const CancelAndStopIntentHandler = {
         || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
   },
   handle(handlerInput) {
-    const speechText = 'Session termindated!';
+    const speechText = 'The connection with the robot terminated!';
 
     return handlerInput.responseBuilder
       .speak(speechText)
