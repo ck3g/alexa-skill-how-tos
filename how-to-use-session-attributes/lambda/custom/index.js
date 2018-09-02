@@ -50,6 +50,33 @@ const PlaceIntentHandler = {
   },
 };
 
+const ReportIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'ReportIntent';
+  },
+  handle(handlerInput) {
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const { position } = sessionAttributes;
+
+    let speechText = '';
+
+    if (typeof position === 'undefined') {
+      speechText = 'The robot is not in the position yet. You need to place it first.';
+    } else {
+      const { direction, x, y } = position;
+
+      speechText = `The robot is in position ${x} ${y} facing ${direction}.`;
+    }
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .reprompt(speechText)
+      .withSimpleCard(CARD_TITLE, speechText)
+      .getResponse();
+  },
+};
+
 const HelpIntentHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -111,6 +138,7 @@ exports.handler = skillBuilder
   .addRequestHandlers(
     LaunchRequestHandler,
     PlaceIntentHandler,
+    ReportIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler
