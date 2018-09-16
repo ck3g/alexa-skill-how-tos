@@ -2,6 +2,13 @@
 /* eslint-disable  no-console */
 
 const Alexa = require('ask-sdk-core');
+const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
+
+const tableName = 'ToyRobotStates';
+const persistenceAdapter = new DynamoDbPersistenceAdapter({
+  tableName,
+  createTable: true
+});
 
 const CARD_TITLE = 'The Toy Robot Simulator';
 const HELP_MESSAGE = 'You can place your robot to a default position using "Place" command. Once the robot is in the position you can move it using "move" command, rotate it using "turn left" or "turn right" commands. In between, you can use the "Report" command to ask for its current position.';
@@ -33,11 +40,30 @@ const LaunchRequestHandler = {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
   handle(handlerInput) {
-    return handlerInput.responseBuilder
-      .speak(WELCOME_MESSAGE)
-      .reprompt(WELCOME_MESSAGE)
-      .withSimpleCard(CARD_TITLE, WELCOME_MESSAGE)
-      .getResponse();
+    return new Promise((resolve, reject) => {
+      handlerInput.attributesManager.getPersistentAttributes()
+        .then((attributes) => {
+          const { position } = attributes;
+
+          let speechText = WELCOME_MESSAGE;
+
+          if (typeof position !== 'undefined') {
+            const { direction, x, y } = position;
+
+            speechText = `The position has been restored. The robot is in position ${x} ${y} facing ${direction}.`;
+          }
+
+          resolve(handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .withSimpleCard(CARD_TITLE, speechText)
+            .getResponse());
+        })
+        .catch((error) => {
+          console.log(error);
+          reject(error);
+        });
+    });
   },
 };
 
@@ -47,27 +73,30 @@ const PlaceIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'PlaceIntent';
   },
   handle(handlerInput) {
-    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-    const { position } = sessionAttributes;
+    return new Promise((resolve, reject) => {
+      handlerInput.attributesManager.getPersistentAttributes()
+        .then((attributes) => {
+          const speechText = 'The robot is in the initial position.';
 
-    let speechText = 'The robot is already in the position.';
+          attributes.position = {
+            'direction': 'north',
+            'x': 0,
+            'y': 0
+          };
 
-    if (typeof position === 'undefined') {
-      speechText = 'The robot is in the initial position.';
-      sessionAttributes.position = {
-        'direction': 'north',
-        'x': 0,
-        'y': 0
-      };
-    }
+          handlerInput.attributesManager.setPersistentAttributes(attributes);
+          handlerInput.attributesManager.savePersistentAttributes();
 
-    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
-
-    return handlerInput.responseBuilder
-      .speak(speechText)
-      .reprompt(speechText)
-      .withSimpleCard(CARD_TITLE, speechText)
-      .getResponse();
+          resolve(handlerInput.responseBuilder
+            .speak(speechText)
+            .reprompt(speechText)
+            .withSimpleCard(CARD_TITLE, speechText)
+            .getResponse());
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
   },
 };
 
@@ -76,9 +105,9 @@ const ReportIntentHandler = {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
       && handlerInput.requestEnvelope.request.intent.name === 'ReportIntent';
   },
-  handle(handlerInput) {
-    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-    const { position } = sessionAttributes;
+  async handle(handlerInput) {
+    const attributes = await handlerInput.attributesManager.getPersistentAttributes();
+    const { position } = attributes;
 
     let speechText = '';
 
@@ -103,9 +132,9 @@ const TurnRightIntentHandler = {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
       && handlerInput.requestEnvelope.request.intent.name === 'TurnRightIntent';
   },
-  handle(handlerInput) {
-    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-    const { position } = sessionAttributes;
+  async handle(handlerInput) {
+    const attributes = await handlerInput.attributesManager.getPersistentAttributes();
+    const { position } = attributes;
     const rotateDirections = {
       north: 'east',
       east: 'south',
@@ -121,7 +150,8 @@ const TurnRightIntentHandler = {
       speechText = 'Beep-Boop.';
     }
 
-    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+    handlerInput.attributesManager.setPersistentAttributes(attributes);
+    await handlerInput.attributesManager.savePersistentAttributes();
 
     return handlerInput.responseBuilder
       .speak(speechText)
@@ -136,9 +166,9 @@ const TurnLeftIntentHandler = {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
       && handlerInput.requestEnvelope.request.intent.name === 'TurnLeftIntent';
   },
-  handle(handlerInput) {
-    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-    const { position } = sessionAttributes;
+  async handle(handlerInput) {
+    const attributes = await handlerInput.attributesManager.getPersistentAttributes();
+    const { position } = attributes;
     const rotateDirections = {
       north: 'west',
       west: 'south',
@@ -154,7 +184,8 @@ const TurnLeftIntentHandler = {
       speechText = 'Beep-Boop.';
     }
 
-    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+    handlerInput.attributesManager.setPersistentAttributes(attributes);
+    await handlerInput.attributesManager.savePersistentAttributes();
 
     return handlerInput.responseBuilder
       .speak(speechText)
@@ -169,9 +200,9 @@ const MoveIntentHandler = {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
       && handlerInput.requestEnvelope.request.intent.name === 'MoveIntent';
   },
-  handle(handlerInput) {
-    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
-    let { position } = sessionAttributes;
+  async handle(handlerInput) {
+    const attributes = await handlerInput.attributesManager.getPersistentAttributes();
+    let { position } = attributes;
     let speechText = '';
 
     if (typeof position === 'undefined') {
@@ -181,7 +212,8 @@ const MoveIntentHandler = {
       speechText = 'Beep-Boop.';
     }
 
-    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+    handlerInput.attributesManager.setPersistentAttributes(attributes);
+    await handlerInput.attributesManager.savePersistentAttributes();
 
     return handlerInput.responseBuilder
       .speak(speechText)
@@ -260,5 +292,6 @@ exports.handler = skillBuilder
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler
   )
+  .withPersistenceAdapter(persistenceAdapter)
   .addErrorHandlers(ErrorHandler)
   .lambda();
