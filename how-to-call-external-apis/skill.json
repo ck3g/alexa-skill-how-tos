@@ -1,0 +1,30 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-US": {
+          "summary": "Alexa skill which gives some inspiration.",
+          "examplePhrases": [
+            "Alexa open inspiration",
+            "Alexa ask inspiration to give me a quote",
+            "Alexa ask inspiration for a quote"
+          ],
+          "name": "Inspiration",
+          "description": "Looking for inspiration? Ask the skill. It provides some inspirational quotes for you."
+        }
+      },
+      "isAvailableWorldwide": true,
+      "testingInstructions": "Run the skill. Ask for inspiration.",
+      "category": "EDUCATION_AND_REFERENCE",
+      "distributionCountries": []
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "sourceDir": "lambda/custom"
+        }
+      }
+    },
+    "manifestVersion": "1.0"
+  }
+}
