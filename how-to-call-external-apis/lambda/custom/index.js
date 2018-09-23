@@ -2,6 +2,9 @@
 /* eslint-disable  no-console */
 
 const Alexa = require('ask-sdk-core');
+const axios = require('axios');
+
+const quotesUrl = 'https://gist.githubusercontent.com/ck3g/44afbba3a80270167cedad37bb8114e3/raw/quotes.json';
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -18,18 +21,36 @@ const LaunchRequestHandler = {
   },
 };
 
+const randomArrayElement = (array) =>
+  array[Math.floor(Math.random() * array.length)];
+
+const fetchQuotes = async () => {
+  try {
+    const { data } = await axios.get(quotesUrl);
+    return data;
+  } catch (error) {
+    console.error('cannot fetch quotes', error);
+  }
+};
+
 const QuoteIntentHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
       && handlerInput.requestEnvelope.request.intent.name === 'QuoteIntent';
   },
-  handle(handlerInput) {
-    const speechText = "Your time is limited, so don't waste it living someone else's life. Steve Jobs.";
+  async handle(handlerInput) {
+    try {
+      const quotes = await fetchQuotes();
+      const quote = randomArrayElement(quotes);
+      const speechText = `${quote.content} ${quote.author}.`;
 
-    return handlerInput.responseBuilder
-      .speak(speechText)
-      .withSimpleCard('Inspiration', speechText)
-      .getResponse();
+      return handlerInput.responseBuilder
+        .speak(speechText)
+        .withSimpleCard('Inspiration', speechText)
+        .getResponse();
+    } catch (error) {
+      console.error(error);
+    }
   },
 };
 
